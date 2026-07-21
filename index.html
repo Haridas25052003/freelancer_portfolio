@@ -1,1698 +1,516 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Haridas Shinde — Full Stack Developer</title>
-    <meta name="description"
-        content="Haridas Shinde — Freelance Full Stack Java & Web Developer. Building scalable backends and modern web experiences.">
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script>
-        (function () {
-            emailjs.init({ publicKey: "ccAsL4dwBkeUApXfO" });
-        })();
-    </script>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link
-        href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap"
-        rel="stylesheet">
-
-    <style>
-        /* =====================================================
-           DESIGN TOKENS & VARIABLES
-        ===================================================== */
-        :root {
-            --bg: #050A0E;
-            --bg-card: #0D1117;
-            --bg-elevated: #161B22;
-            --border: rgba(255, 255, 255, 0.07);
-            --border-accent: rgba(0, 255, 150, 0.3);
-            --text-primary: #E6EDF3;
-            --text-secondary: #8B949E;
-            --text-muted: #484F58;
-            --accent: #00FF96;
-            --accent-dim: rgba(0, 255, 150, 0.12);
-            --accent-blue: #58A6FF;
-            --accent-blue-dim: rgba(88, 166, 255, 0.12);
-            --glow-green: 0 0 30px rgba(0, 255, 150, 0.15);
-            --glow-blue: 0 0 30px rgba(88, 166, 255, 0.15);
-            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-            --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
-        }
-
-        [data-theme="light"] {
-            --bg: #F6F8FA;
-            --bg-card: #FFFFFF;
-            --bg-elevated: #F0F2F5;
-            --border: rgba(0, 0, 0, 0.1);
-            --border-accent: rgba(0, 180, 100, 0.4);
-            --text-primary: #0D1117;
-            --text-secondary: #57606A;
-            --text-muted: #B0B8C1;
-            --accent: #00A862;
-            --accent-dim: rgba(0, 168, 98, 0.1);
-            --accent-blue: #0969DA;
-            --accent-blue-dim: rgba(9, 105, 218, 0.1);
-            --glow-green: 0 4px 20px rgba(0, 168, 98, 0.1);
-            --glow-blue: 0 4px 20px rgba(9, 105, 218, 0.1);
-        }
-
-        /* =====================================================
-           BASE RESET
-        ===================================================== */
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Inter', system-ui, sans-serif;
-            background-color: var(--bg);
-            color: var(--text-primary);
-            overflow-x: hidden;
-            line-height: 1.6;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        /* =====================================================
-           SCROLLBAR
-        ===================================================== */
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent);
-            border-radius: 2px;
-        }
-
-        /* =====================================================
-           NOISE TEXTURE OVERLAY
-        ===================================================== */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0.4;
-        }
-
-        /* =====================================================
-           TYPOGRAPHY
-        ===================================================== */
-        .font-display {
-            font-family: 'Syne', sans-serif;
-        }
-
-        .font-mono {
-            font-family: 'DM Mono', monospace;
-        }
-
-        /* =====================================================
-           GRID BACKGROUND (Hero)
-        ===================================================== */
-        .hero-bg {
-            background-color: var(--bg);
-            background-image:
-                linear-gradient(var(--border) 1px, transparent 1px),
-                linear-gradient(90deg, var(--border) 1px, transparent 1px);
-            background-size: 50px 50px;
-        }
-
-        .hero-glow {
-            position: absolute;
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(0, 255, 150, 0.06) 0%, transparent 70%);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-        }
-
-        /* =====================================================
-           NAVIGATION
-        ===================================================== */
-        #navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            transition: all 0.3s var(--ease-out);
-        }
-
-        #navbar.scrolled {
-            background: rgba(5, 10, 14, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-        }
-
-        [data-theme="light"] #navbar.scrolled {
-            background: rgba(246, 248, 250, 0.85);
-        }
-
-        .nav-link {
-            position: relative;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            font-weight: 500;
-            letter-spacing: 0.02em;
-            text-decoration: none;
-            transition: color 0.2s;
-            padding: 4px 0;
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 1px;
-            background: var(--accent);
-            transition: width 0.3s var(--ease-out);
-        }
-
-        .nav-link:hover,
-        .nav-link.active {
-            color: var(--text-primary);
-        }
-
-        .nav-link:hover::after,
-        .nav-link.active::after {
-            width: 100%;
-        }
-
-        /* Hamburger */
-        #mobile-menu {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            z-index: 999;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 2rem;
-        }
-
-        #mobile-menu.open {
-            display: flex;
-        }
-
-        #mobile-menu .nav-link {
-            font-size: 1.5rem;
-            font-family: 'Syne', sans-serif;
-            font-weight: 700;
-        }
-
-        .hamburger-line {
-            display: block;
-            width: 22px;
-            height: 2px;
-            background: var(--text-primary);
-            transition: all 0.3s;
-            transform-origin: center;
-        }
-
-        #hamburger.open .hamburger-line:nth-child(1) {
-            transform: translateY(6px) rotate(45deg);
-        }
-
-        #hamburger.open .hamburger-line:nth-child(2) {
-            opacity: 0;
-        }
-
-        #hamburger.open .hamburger-line:nth-child(3) {
-            transform: translateY(-6px) rotate(-45deg);
-        }
-
-        /* =====================================================
-           SCROLL REVEAL ANIMATIONS
-        ===================================================== */
-        .reveal {
-            opacity: 0;
-            transform: translateY(24px);
-            transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
-        }
-
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .reveal-delay-1 {
-            transition-delay: 0.1s;
-        }
-
-        .reveal-delay-2 {
-            transition-delay: 0.2s;
-        }
-
-        .reveal-delay-3 {
-            transition-delay: 0.3s;
-        }
-
-        .reveal-delay-4 {
-            transition-delay: 0.4s;
-        }
-
-        /* =====================================================
-           SECTION TITLES
-        ===================================================== */
-        .section-label {
-            font-family: 'DM Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--accent);
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            margin-bottom: 0.75rem;
-        }
-
-        .section-title {
-            font-family: 'Syne', sans-serif;
-            font-weight: 800;
-            font-size: clamp(1.75rem, 4vw, 2.5rem);
-            line-height: 1.1;
-            color: var(--text-primary);
-        }
-
-        /* =====================================================
-           CARDS
-        ===================================================== */
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
-        }
-
-        .card:hover {
-            border-color: var(--border-accent);
-            box-shadow: var(--glow-green);
-            transform: translateY(-4px);
-        }
-
-        /* =====================================================
-           BUTTONS
-        ===================================================== */
-        .btn-primary {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.75rem;
-            background: var(--accent);
-            color: #050A0E;
-            font-family: 'Syne', sans-serif;
-            font-weight: 700;
-            font-size: 0.875rem;
-            letter-spacing: 0.03em;
-            border-radius: 8px;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
-        }
-
-        .btn-primary:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 255, 150, 0.3);
-        }
-
-        .btn-secondary {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.75rem;
-            background: transparent;
-            color: var(--text-primary);
-            font-family: 'Syne', sans-serif;
-            font-weight: 600;
-            font-size: 0.875rem;
-            letter-spacing: 0.03em;
-            border-radius: 8px;
-            text-decoration: none;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            transition: border-color 0.2s, background 0.2s, transform 0.2s;
-        }
-
-        .btn-secondary:hover {
-            border-color: var(--accent);
-            background: var(--accent-dim);
-            transform: translateY(-2px);
-        }
-
-        /* =====================================================
-           HERO TYPING CURSOR
-        ===================================================== */
-        .cursor-blink {
-            display: inline-block;
-            width: 3px;
-            height: 1em;
-            background: var(--accent);
-            margin-left: 2px;
-            vertical-align: middle;
-            animation: cursorBlink 1s step-end infinite;
-        }
-
-        @keyframes cursorBlink {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0;
-            }
-        }
-
-        /* =====================================================
-           SKILL BADGES
-        ===================================================== */
-        .skill-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 0.875rem;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 0.8125rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            transition: all 0.2s;
-            cursor: default;
-        }
-
-        .skill-badge:hover {
-            border-color: var(--border-accent);
-            color: var(--accent);
-            background: var(--accent-dim);
-        }
-
-        .skill-badge img {
-            width: 18px;
-            height: 18px;
-            object-fit: contain;
-        }
-
-        .skill-category-title {
-            font-family: 'DM Mono', monospace;
-            font-size: 0.7rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin-bottom: 0.75rem;
-        }
-
-        /* =====================================================
-           PROJECT CARDS
-        ===================================================== */
-        .project-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .project-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-blue));
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .project-card:hover {
-            border-color: rgba(0, 255, 150, 0.25);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            transform: translateY(-6px);
-        }
-
-        .project-card:hover::before {
-            opacity: 1;
-        }
-
-        .project-rank {
-            font-family: 'DM Mono', monospace;
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            letter-spacing: 0.1em;
-        }
-
-        .project-name {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.125rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            line-height: 1.3;
-        }
-
-        .project-problem {
-            font-size: 0.8rem;
-            color: var(--accent);
-            font-family: 'DM Mono', monospace;
-        }
-
-        .project-desc {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            line-height: 1.6;
-            flex: 1;
-        }
-
-        .tech-tag {
-            display: inline-block;
-            padding: 0.2rem 0.625rem;
-            background: var(--accent-blue-dim);
-            color: var(--accent-blue);
-            border-radius: 4px;
-            font-family: 'DM Mono', monospace;
-            font-size: 0.7rem;
-            font-weight: 500;
-        }
-
-        .project-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.375rem;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: color 0.2s;
-            font-family: 'DM Mono', monospace;
-        }
-
-        .project-link:hover {
-            color: var(--accent);
-        }
-
-        /* =====================================================
-           TIMELINE
-        ===================================================== */
-        .timeline-line {
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 1px;
-            background: linear-gradient(to bottom, transparent, var(--accent), transparent);
-        }
-
-        .timeline-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--accent);
-            box-shadow: 0 0 10px var(--accent);
-            flex-shrink: 0;
-        }
-
-        /* =====================================================
-           SERVICES
-        ===================================================== */
-        .service-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
-            background: var(--accent-dim);
-            border: 1px solid var(--border-accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-        }
-
-        /* =====================================================
-           CONTACT FORM
-        ===================================================== */
-        .form-input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 0.875rem;
-            font-family: 'Inter', sans-serif;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            outline: none;
-        }
-
-        .form-input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-dim);
-        }
-
-        .form-input::placeholder {
-            color: var(--text-muted);
-        }
-
-        /* =====================================================
-           CERT CARD
-        ===================================================== */
-        .cert-card {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 0.875rem;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            transition: border-color 0.2s, color 0.2s;
-            display: flex;
-            align-items: flex-start;
-            gap: 0.625rem;
-        }
-
-        .cert-card:hover {
-            border-color: var(--border-accent);
-            color: var(--text-primary);
-        }
-
-        /* =====================================================
-           THEME TOGGLE
-        ===================================================== */
-        .theme-toggle {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 1rem;
-        }
-
-        .theme-toggle:hover {
-            border-color: var(--border-accent);
-            background: var(--accent-dim);
-        }
-
-        /* =====================================================
-           TOAST NOTIFICATION
-        ===================================================== */
-        #toast {
-            position: fixed;
-            bottom: 1.5rem;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 0.875rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 0.875rem;
-            z-index: 9999;
-            transition: transform 0.4s var(--ease-out);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            min-width: 280px;
-        }
-
-        #toast.show {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* =====================================================
-           ABOUT STAT
-        ===================================================== */
-        .about-stat {
-            border-left: 2px solid var(--accent);
-            padding-left: 1rem;
-        }
-
-        /* =====================================================
-           CTA SECTION
-        ===================================================== */
-        .cta-section {
-            background: linear-gradient(135deg, var(--accent-dim) 0%, var(--accent-blue-dim) 100%);
-            border: 1px solid var(--border-accent);
-            border-radius: 16px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cta-section::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 0% 50%, rgba(0, 255, 150, 0.06) 0%, transparent 60%),
-                radial-gradient(circle at 100% 50%, rgba(88, 166, 255, 0.06) 0%, transparent 60%);
-        }
-
-        /* =====================================================
-           BACK TO TOP
-        ===================================================== */
-        #back-to-top {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            width: 40px;
-            height: 40px;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 100;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.3s;
-            color: var(--text-secondary);
-            text-decoration: none;
-        }
-
-        #back-to-top.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        #back-to-top:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        /* =====================================================
-           CONTACT SOCIAL LINK
-        ===================================================== */
-        .social-link {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.875rem 1.25rem;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            text-decoration: none;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            transition: all 0.2s;
-        }
-
-        .social-link:hover {
-            border-color: var(--border-accent);
-            color: var(--accent);
-            background: var(--accent-dim);
-        }
-
-        /* =====================================================
-           RESPONSIVE HELPERS
-        ===================================================== */
-        @media (max-width: 768px) {
-            .desktop-only {
-                display: none;
-            }
-        }
-
-        @media (min-width: 769px) {
-            .mobile-only {
-                display: none;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-    <!-- ================================================================
-         NAVIGATION
-    ================================================================ -->
-    <nav id="navbar" aria-label="Main navigation">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
-            <!-- Logo -->
-            <a href="#hero" class="font-display font-extrabold text-base tracking-tight"
-                style="color: var(--text-primary);">
-                <span style="color: var(--accent);">H</span>S<span style="color: var(--text-muted);">.</span>
-            </a>
-
-            <!-- Desktop Nav -->
-            <div class="desktop-only flex items-center gap-8">
-                <a href="#about" class="nav-link">About</a>
-                <a href="#skills" class="nav-link">Skills</a>
-                <a href="#services" class="nav-link">Services</a>
-                <a href="#projects" class="nav-link">Projects</a>
-                <a href="#experience" class="nav-link">Experience</a>
-                <a href="#contact" class="nav-link">Contact</a>
-            </div>
-
-            <div class="flex items-center gap-3">
-                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme" title="Toggle light/dark mode">
-                    <span id="theme-icon">🌙</span>
-                </button>
-                <a href="#contact" class="btn-primary desktop-only"
-                    style="padding: 0.5rem 1.25rem; font-size: 0.8rem;">Hire Me</a>
-
-                <!-- Hamburger -->
-                <button id="hamburger" class="mobile-only flex flex-col gap-1.5 p-1" aria-label="Open menu"
-                    aria-expanded="false">
-                    <span class="hamburger-line"></span>
-                    <span class="hamburger-line"></span>
-                    <span class="hamburger-line"></span>
-                </button>
-            </div>
+<html lang="en">
+  <head>
+    <!-- Metadata of the Webpage -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Haridas Shinde - Software Engineer Portfolio" />
+    <meta name="author" content="Haridas Shinde" />
+    <meta
+      name="keywords"
+      content="Haridas Shinde, Software Engineer, Java Developer, Spring Boot, Full Stack Developer, Backend Developer"
+    />
+    <!-- Webpage Logo -->
+    <link rel="shortcut icon" href="./assets/img/favicon.ico" />
+    <!-- Webpage Title -->
+    <title>Haridas Shinde | Software Engineer</title>
+
+    <!-- Import CSS: Main Stylesheet -->
+    <link rel="stylesheet" href="./assets/css/main.css" />
+  </head>
+
+  <body>
+    <div id="particles-js">
+      <div class="header">
+        <h1>
+          <span class="site-title">HARIDAS SHINDE</span>
+          <span class="site-description">Software Engineer • Java Developer • Full Stack Developer</span>
+        </h1>
+        <div class="header-icons">
+          <a aria-label="My LinkedIn Profile" target="_blank" href="https://linkedin.com/in/haridas-shinde-113971235">
+            <i class="icon fa fa-linkedin" aria-hidden="true"></i>
+          </a>
+          <a aria-label="My Github Profile" target="_blank" href="https://github.com/Haridas25052003">
+            <i class="icon fa fa-github-alt" aria-hidden="true"></i>
+          </a>
+          <a aria-label="My Portfolio" target="_blank" href="https://freelancebyhari.vercel.app/">
+            <i class="icon fa fa-globe" aria-hidden="true"></i>
+          </a>
+          <a aria-label="Send Email" href="mailto:haridasshinde314@gmail.com" target="_blank"
+            ><i class="icon fa fa-envelope"></i
+          ></a>
         </div>
-    </nav>
-
-    <!-- Mobile Menu -->
-    <div id="mobile-menu" role="dialog" aria-modal="true" aria-label="Mobile navigation">
-        <a href="#about" class="nav-link mobile-nav-link">About</a>
-        <a href="#skills" class="nav-link mobile-nav-link">Skills</a>
-        <a href="#services" class="nav-link mobile-nav-link">Services</a>
-        <a href="#projects" class="nav-link mobile-nav-link">Projects</a>
-        <a href="#experience" class="nav-link mobile-nav-link">Experience</a>
-        <a href="#contact" class="nav-link mobile-nav-link">Contact</a>
-        <div class="flex gap-3 mt-2">
-            <a href="#contact" class="btn-primary">Hire Me</a>
-            <a href="resume.pdf" download class="btn-secondary">Resume ↓</a>
+        <div class="header-links">
+          <a class="link" href="#about" data-scroll>About Me</a>
+          <a class="link" href="#projects" data-scroll>Projects</a>
+          <a class="link" href="#education" data-scroll>Education</a>
+          <a class="link" href="#contact" data-scroll>Contact</a>
         </div>
+      </div>
+      <a class="down" href="#about" data-scroll><i class="icon fa fa-chevron-down" aria-hidden="true"></i></a>
     </div>
 
-    <!-- ================================================================
-         HERO SECTION
-    ================================================================ -->
-    <section id="hero" class="hero-bg relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
-        <div class="hero-glow"></div>
-
-        <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 text-center">
-            <!-- Status badge -->
-            <div class="reveal inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-8"
-                style="background: var(--accent-dim); border-color: var(--border-accent); font-size: 0.75rem; font-family: 'DM Mono', monospace; color: var(--accent);">
-                <span class="w-2 h-2 rounded-full animate-pulse" style="background: var(--accent);"></span>
-                Available for freelance work
-            </div>
-
-            <!-- Name -->
-            <div class="reveal reveal-delay-1 mb-4">
-                <h1 class="font-display font-extrabold"
-                    style="font-size: clamp(2.5rem, 8vw, 5rem); line-height: 1.05; color: var(--text-primary); letter-spacing: -0.02em;">
-                    Haridas Shinde
-                </h1>
-            </div>
-
-            <!-- Tagline with typing -->
-            <div class="reveal reveal-delay-2 mb-6">
-                <p class="font-mono text-base sm:text-lg" style="color: var(--text-secondary);">
-                    &gt; <span id="typed-tagline" style="color: var(--accent);"></span><span class="cursor-blink"
-                        id="cursor"></span>
-                </p>
-            </div>
-
-            <!-- Summary -->
-            <div class="reveal reveal-delay-3 mb-10">
-                <p class="text-base sm:text-lg max-w-2xl mx-auto"
-                    style="color: var(--text-secondary); line-height: 1.8;">
-                    Freelance Full Stack Developer specializing in <strong style="color: var(--text-primary);">Java,
-                        Spring Boot, Node.js, React</strong> & modern web technologies. I help startups and businesses
-                    build secure, scalable, and high-performance applications.
-                </p>
-            </div>
-
-            <!-- CTAs -->
-            <div class="reveal reveal-delay-4 flex flex-wrap gap-3 justify-center">
-                <a href="#projects" class="btn-primary">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2.5">
-                        <path d="M3 6h18M3 12h18M3 18h18" />
-                    </svg>
-                    View Projects
-                </a>
-                <a href="resume.pdf" download class="btn-secondary">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2.5">
-                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
-                    </svg>
-                    Download Resume
-                </a>
-                <a href="#contact" class="btn-secondary">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2.5">
-                        <path
-                            d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.63 19.79 19.79 0 01.92 1 2 2 0 012.92 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L7.91 7.91a16 16 0 006.06 6.06l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
-                    </svg>
-                    Hire Me
-                </a>
-            </div>
-
-            <!-- Scroll indicator -->
-            <div class="reveal mt-20 flex flex-col items-center gap-2" style="color: var(--text-muted);">
-                <span class="font-mono text-xs">scroll</span>
-                <div class="w-px h-10 mx-auto"
-                    style="background: linear-gradient(to bottom, var(--text-muted), transparent);"></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ================================================================
-         ABOUT SECTION
-    ================================================================ -->
-    <section id="about" class="max-w-6xl mx-auto px-4 sm:px-6 py-24">
-        <div class="reveal">
-            <div class="section-label">01 / about</div>
-            <h2 class="section-title mb-12">Who Am I?</h2>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-8 items-start">
-            <!-- Photo -->
-            <div class="md:col-span-2 reveal">
-                <div class="relative inline-block">
-                    <div class="w-48 h-48 md:w-64 md:h-64 rounded-2xl overflow-hidden"
-                        style="border: 2px solid var(--border-accent); box-shadow: var(--glow-green);">
-                        <img src="hriphoto.jpg" alt="Haridas Shinde — Full Stack Developer"
-                            class="w-full h-full object-cover"
-                            onerror="this.onerror=null;this.src='https://placehold.co/300x300/00FF96/050A0E?text=HS&font=syne';">
-                    </div>
-                    <!-- Floating badge -->
-                    <div class="absolute -bottom-3 -right-3 px-3 py-1.5 rounded-lg font-mono text-xs"
-                        style="background: var(--bg-elevated); border: 1px solid var(--border-accent); color: var(--accent);">
-                        8.6 CGPA
-                    </div>
-                </div>
-            </div>
-
-            <!-- Text -->
-            <div class="md:col-span-3 space-y-6">
-                <div class="reveal reveal-delay-1">
-                    <p class="text-base" style="color: var(--text-secondary); line-height: 1.9;">
-                        I'm a <strong style="color: var(--text-primary);">Freelance Full Stack Developer</strong> with a
-                        B.E. in Computer Science (2025) from Maharashtra, India. I specialize in building
-                        clean-architecture backends with Java/Spring Boot and modern frontend interfaces using React,
-                        Angular & vanilla JS.
-                    </p>
-                    <p class="text-base mt-4" style="color: var(--text-secondary); line-height: 1.9;">
-                        From designing REST APIs to full-stack deployments, I focus on delivering <strong
-                            style="color: var(--text-primary);">secure, scalable, and maintainable</strong> software
-                        that solves real business problems.
-                    </p>
-                </div>
-
-                <!-- Stats -->
-                <div class="reveal reveal-delay-2 grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
-                    <div class="about-stat">
-                        <div class="font-display font-bold text-xl" style="color: var(--text-primary);">7+</div>
-                        <div class="text-xs" style="color: var(--text-muted);">Projects Built</div>
-                    </div>
-                    <div class="about-stat">
-                        <div class="font-display font-bold text-xl" style="color: var(--text-primary);">1yr</div>
-                        <div class="text-xs" style="color: var(--text-muted);">Experience</div>
-                    </div>
-                    <div class="about-stat">
-                        <div class="font-display font-bold text-xl" style="color: var(--text-primary);">5+</div>
-                        <div class="text-xs" style="color: var(--text-muted);">Certifications</div>
-                    </div>
-                    <div class="about-stat">
-                        <div class="font-display font-bold text-xl" style="color: var(--text-primary);">8.6</div>
-                        <div class="text-xs" style="color: var(--text-muted);">CGPA</div>
-                    </div>
-                </div>
-
-                <!-- Detail chips -->
-                <div class="reveal reveal-delay-3 flex flex-wrap gap-2">
-                    <span class="skill-badge">📍 Maharashtra, India</span>
-                    <span class="skill-badge">🎓 B.E. CSE 2025</span>
-                    <span class="skill-badge">💼 Full Stack Java/Web</span>
-                    <span class="skill-badge">🚀 Open to Opportunities</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ================================================================
-         SKILLS SECTION
-    ================================================================ -->
-    <section id="skills" class="py-24"
-        style="background: var(--bg-card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6">
-            <div class="reveal mb-12">
-                <div class="section-label">02 / skills</div>
-                <h2 class="section-title">Technical Stack</h2>
-                <p class="mt-3 max-w-xl" style="color: var(--text-secondary); font-size: 0.9375rem;">
-                    A carefully curated stack covering backend systems, frontend UIs, databases, and DevOps tooling.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="skills-grid">
-                <!-- Rendered by JS -->
-            </div>
-        </div>
-    </section>
-
-    <!-- ================================================================
-         SERVICES SECTION
-    ================================================================ -->
-    <section id="services" class="max-w-6xl mx-auto px-4 sm:px-6 py-24">
-        <div class="reveal mb-12">
-            <div class="section-label">03 / services</div>
-            <h2 class="section-title">What I Offer</h2>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="services-grid">
-            <!-- Rendered by JS -->
-        </div>
-    </section>
-
-    <!-- ================================================================
-         PROJECTS SECTION
-    ================================================================ -->
-    <section id="projects" class="py-24"
-        style="background: var(--bg-card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6">
-            <div class="reveal mb-12">
-                <div class="section-label">04 / projects</div>
-                <h2 class="section-title">Featured Projects</h2>
-                <p class="mt-3 max-w-xl" style="color: var(--text-secondary); font-size: 0.9375rem;">
-                    Real-world projects demonstrating problem-solving, clean architecture, and full-stack depth —
-                    ordered by impact.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="projects-grid">
-                <!-- Rendered by JS -->
-            </div>
-        </div>
-    </section>
-
-    <!-- ================================================================
-         EXPERIENCE & EDUCATION
-    ================================================================ -->
-    <section id="experience" class="max-w-6xl mx-auto px-4 sm:px-6 py-24">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
-
-            <!-- Experience -->
-            <div>
-                <div class="reveal mb-10">
-                    <div class="section-label">05 / experience</div>
-                    <h2 class="section-title">Work History</h2>
-                </div>
-                <div id="experience-list" class="relative pl-6 space-y-6">
-                    <div class="timeline-line"></div>
-                    <!-- Rendered by JS -->
-                </div>
-            </div>
-
-            <!-- Education & Certs -->
-            <div>
-                <div class="reveal mb-10">
-                    <div class="section-label">06 / education</div>
-                    <h2 class="section-title">Education & Certifications</h2>
-                </div>
-
-                <!-- Degree card -->
-                <div class="reveal card p-5 mb-6">
-                    <div class="flex items-start gap-4">
-                        <div class="service-icon text-xl">🎓</div>
-                        <div>
-                            <div class="font-display font-bold text-base" style="color: var(--text-primary);">B.E.
-                                Computer Science Engineering</div>
-                            <div class="text-sm mt-0.5" style="color: var(--text-secondary);">Babasaheb Naik College of
-                                Engineering, Pusad</div>
-                            <div class="flex items-center gap-3 mt-2">
-                                <span class="font-mono text-xs px-2 py-0.5 rounded"
-                                    style="background: var(--accent-dim); color: var(--accent);">2021 – 2025</span>
-                                <span class="font-mono text-xs px-2 py-0.5 rounded"
-                                    style="background: var(--accent-blue-dim); color: var(--accent-blue);">CGPA:
-                                    8.6</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Certifications -->
-                <div class="reveal reveal-delay-1">
-                    <div class="skill-category-title">Certifications</div>
-                    <div class="space-y-2" id="certs-list">
-                        <!-- Rendered by JS -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ================================================================
-         CTA SECTION
-    ================================================================ -->
-    <section class="max-w-6xl mx-auto px-4 sm:px-6 pb-24">
-        <div class="cta-section relative p-8 sm:p-12 text-center reveal">
-            <div class="relative z-10">
-                <div class="section-label mb-4">ready to build something?</div>
-                <h2 class="font-display font-extrabold mb-4"
-                    style="font-size: clamp(1.75rem, 4vw, 2.75rem); color: var(--text-primary);">
-                    Let's Turn Your Idea Into Reality
-                </h2>
-                <p class="max-w-lg mx-auto mb-8" style="color: var(--text-secondary);">
-                    Whether you need a backend API, a full-stack web app, or just a second opinion on your architecture
-                    — I'm here.
-                </p>
-                <div class="flex flex-wrap gap-3 justify-center">
-                    <a href="#contact" class="btn-primary">Start a Conversation</a>
-                    <a href="resume.pdf" download class="btn-secondary">Download Resume</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ================================================================
-         CONTACT SECTION
-    ================================================================ -->
-    <section id="contact" style="background: var(--bg-card); border-top: 1px solid var(--border);">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-24">
-            <div class="reveal mb-12">
-                <div class="section-label">07 / contact</div>
-                <h2 class="section-title">Get In Touch</h2>
-                <p class="mt-3 max-w-lg" style="color: var(--text-secondary);">
-                    Have a project in mind? Let's discuss how I can help. I typically respond within 24 hours.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-5 gap-10">
-                <!-- Social links -->
-                <div class="lg:col-span-2 space-y-3 reveal">
-                    <a href="mailto:haridasshinde314@gmail.com" class="social-link">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                            <polyline points="22,6 12,13 2,6" />
-                        </svg>
-                        <div>
-                            <div class="font-medium text-sm" style="color: var(--text-primary);">Email</div>
-                            <div class="font-mono text-xs" style="color: var(--text-muted);">haridasshinde314@gmail.com
-                            </div>
-                        </div>
-                    </a>
-                    <a href="https://linkedin.com/in/haridas-shinde-113971235" target="_blank" rel="noopener"
-                        class="social-link">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                        </svg>
-                        <div>
-                            <div class="font-medium text-sm" style="color: var(--text-primary);">LinkedIn</div>
-                            <div class="font-mono text-xs" style="color: var(--text-muted);">haridas-shinde-113971235
-                            </div>
-                        </div>
-                    </a>
-                    <a href="https://github.com/Haridas25052003" target="_blank" rel="noopener" class="social-link">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
-                        </svg>
-                        <div>
-                            <div class="font-medium text-sm" style="color: var(--text-primary);">GitHub</div>
-                            <div class="font-mono text-xs" style="color: var(--text-muted);">Haridas25052003</div>
-                        </div>
-                    </a>
-
-                    <!-- Quote -->
-                    <div class="mt-6 p-4 rounded-xl"
-                        style="border-left: 3px solid var(--accent); background: var(--bg-elevated);">
-                        <p class="font-mono text-sm italic" style="color: var(--text-secondary);">"If you can imagine
-                            it, I can build it."</p>
-                        <p class="font-mono text-xs mt-2" style="color: var(--text-muted);">— Haridas Shinde</p>
-                    </div>
-                </div>
-
-                <!-- Contact Form -->
-                <div class="lg:col-span-3 reveal reveal-delay-2">
-                    <form id="contact-form" novalidate>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label for="name" class="block text-xs font-medium mb-1.5"
-                                    style="color: var(--text-secondary);">Your Name <span
-                                        style="color: var(--accent);">*</span></label>
-                                <input type="text" id="name" name="name" class="form-input" placeholder="John Smith"
-                                    required autocomplete="name">
-                            </div>
-                            <div>
-                                <label for="email" class="block text-xs font-medium mb-1.5"
-                                    style="color: var(--text-secondary);">Email Address <span
-                                        style="color: var(--accent);">*</span></label>
-                                <input type="email" id="email" name="email" class="form-input"
-                                    placeholder="john@company.com" required autocomplete="email">
-                            </div>
-                        </div>
-                        <div class="mb-4">
-                            <label for="subject" class="block text-xs font-medium mb-1.5"
-                                style="color: var(--text-secondary);">Subject</label>
-                            <input type="text" id="subject" name="subject" class="form-input"
-                                placeholder="Project Inquiry / Hire Me / Collaboration">
-                        </div>
-                        <div class="mb-5">
-                            <label for="message" class="block text-xs font-medium mb-1.5"
-                                style="color: var(--text-secondary);">Message <span
-                                    style="color: var(--accent);">*</span></label>
-                            <textarea id="message" name="message" rows="5" class="form-input"
-                                placeholder="Tell me about your project, timeline, and budget..." required
-                                style="resize: vertical;"></textarea>
-                        </div>
-                        <button type="submit" id="submit-btn" class="btn-primary w-full justify-center">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5">
-                                <line x1="22" y1="2" x2="11" y2="13" />
-                                <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                            </svg>
-                            <span id="submit-label">Send Message</span>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div style="border-top: 1px solid var(--border); padding: 1.5rem;">
-            <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-                <p class="font-mono text-xs" style="color: var(--text-muted);">© 2025 Haridas Shinde. Built with care.
-                </p>
-                <p class="font-mono text-xs" style="color: var(--text-muted);">Maharashtra, India 🇮🇳</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Back to top -->
-    <a href="#hero" id="back-to-top" aria-label="Back to top" title="Back to top">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <polyline points="18 15 12 9 6 15" />
-        </svg>
-    </a>
-
-    <!-- Toast Notification -->
-    <div id="toast" role="alert" aria-live="polite">
-        <span id="toast-icon">✅</span>
-        <div>
-            <div id="toast-title" class="font-display font-bold text-sm" style="color: var(--text-primary);"></div>
-            <div id="toast-msg" class="text-xs mt-0.5" style="color: var(--text-secondary);"></div>
-        </div>
+    <!-- ===== DIVIDER 1: Before My Story ===== -->
+    <div class="section-divider" style="margin-top: 30px;">
+      <span class="divider-line"></span>
+      <span class="divider-icon"><i class="fa fa-user" aria-hidden="true"></i></span>
+      <span class="divider-line"></span>
     </div>
 
-    <!-- ================================================================
-         JAVASCRIPT
-    ================================================================ -->
-    <script>
-        (() => {
-            'use strict';
+    <!-- About Section -->
+    <section id="about">
+      <div class="user-details">
+        <h1>My Story</h1>
+        <picture>
+          <source
+            type="image/webp"
+            srcset="./assets/img/webp/Professional-Picture-Me.webp"
+            alt="Haridas Shinde"
+            width="20%"
+            style="border-radius: 50%"
+          />
+          <img
+            src="./assets/img/jpg/Professional-Picture-Me.jpg"
+            alt="Haridas Shinde"
+            width="20%"
+            style="border-radius: 50%"
+          />
+        </picture>
+        <p>
+          I am a Computer Science graduate with hands-on experience in building web applications using Java, 
+          Spring Boot, Hibernate/JPA, and SQL. I'm passionate about building REST APIs, implementing CRUD operations, 
+          and developing clean, maintainable backend systems. I also have frontend skills in HTML, CSS, and JavaScript, 
+          with basic knowledge of React. I'm actively seeking an entry-level opportunity to contribute and grow as a 
+          backend or full-stack developer. My goal is to leverage my technical skills to build innovative solutions 
+          that solve real-world problems.
+        </p>
+      </div>
+    </section>
 
-            /* ==========================================
-               PORTFOLIO DATA
-            ========================================== */
-            const DATA = {
-                typingPhrases: [
-                    'Full Stack Java Developer',
-                    'Spring Boot Specialist',
-                    'REST API Engineer',
-                    'React & Node.js Dev',
-                    'Open Source Enthusiast'
-                ],
+    <!-- ===== DIVIDER 2: Before Skills ===== -->
+    <div class="section-divider">
+      <span class="divider-line"></span>
+      <span class="divider-icon"><i class="fa fa-cogs" aria-hidden="true"></i></span>
+      <span class="divider-line"></span>
+    </div>
 
-                skills: {
-                    'Backend': [
-                        { name: 'Java (Core)', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg' },
-                        { name: 'Spring Boot', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg' },
-                        { name: 'Node.js', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg' },
-                        { name: 'Express.js', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg' },
-                        { name: 'REST APIs', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/swagger/swagger-original.svg' },
-                        { name: 'JUnit', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/junit/junit-original.svg' },
-                    ],
-                    'Frontend': [
-                        { name: 'JavaScript ES6+', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg' },
-                        { name: 'React', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg' },
-                        { name: 'Angular', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/angularjs/angularjs-original.svg' },
-                        { name: 'HTML5', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg' },
-                        { name: 'CSS3', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg' },
-                    ],
-                    'Database': [
-                        { name: 'MySQL', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg' },
-                        { name: 'MongoDB', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg' },
-                        { name: 'SQL / JDBC', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg' },
-                    ],
-                    'Tools': [
-                        { name: 'Git', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg' },
-                        { name: 'GitHub', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg' },
-                        { name: 'Docker', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg' },
-                        { name: 'Postman', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postman/postman-original.svg' },
-                        { name: 'Linux', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg' },
-                        { name: 'VS Code', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg' },
-                    ]
-                },
+    <!-- Skills Section -->
+    <section id="skills">
+      <div class="user-details">
+        <h1>My Skills</h1>
+      </div>
 
-                services: [
-                    { icon: '⚙️', title: 'Backend Development', desc: 'Scalable REST APIs and microservices using Java, Spring Boot, and Node.js with clean architecture patterns.' },
-                    { icon: '🌐', title: 'Full Stack Web Apps', desc: 'End-to-end web applications combining powerful backends with React/Angular frontends and modern UX.' },
-                    { icon: '🗄️', title: 'Database Design', desc: 'Robust relational (MySQL) and NoSQL (MongoDB) schema design, optimization, and data modeling.' },
-                    { icon: '🔌', title: 'API Integration', desc: 'Seamless third-party API integrations including OpenAI, payment gateways, and custom webhook systems.' },
-                    { icon: '🐛', title: 'Code Review & Debugging', desc: 'Identifying performance bottlenecks, fixing bugs, and improving code quality with best practices.' },
-                    { icon: '🚀', title: 'Deployment & DevOps', desc: 'Docker containerization, Linux server setup, and CI/CD pipeline configuration for reliable deployments.' },
-                ],
+      <!-- User Specifics -->
+      <div class="user">
+        <!-- Technology Stack #1: Languages -->
+        <div class="tech">
+          <h2>Languages</h2>
+          <i class="devicon-java-plain-wordmark colored"></i>
+          <i class="devicon-javascript-plain colored"></i>
+          <i class="devicon-mysql-plain-wordmark colored"></i>
+          <p>My core languages for backend development, OOP, and database management.</p>
+        </div>
 
-                projects: [
-                    {
-                        name: 'AI Interview Evaluation Assistant',
-                        problem: 'Eliminate generic, static interview prep',
-                        desc: 'An AI-powered platform that generates dynamic interview questions and evaluates user responses in real time. Includes performance analytics, simulated interview sessions, and OpenAI API integration for intelligent feedback.',
-                        tech: ['React', 'Node.js', 'Express.js', 'MongoDB', 'OpenAI API'],
-                        github: 'https://github.com/Haridas25052003',
-                        highlight: true
-                    },
-                    {
-                        name: 'School Management Service',
-                        problem: 'Streamline school operations at scale',
-                        desc: 'A backend microservice system managing student records, teacher management, attendance tracking, and administrative workflows. Built with clean architecture and RESTful APIs for scalability.',
-                        tech: ['Java', 'Spring Boot', 'REST API', 'MySQL'],
-                        github: 'https://github.com/Haridas25052003',
-                    },
-                    {
-                        name: 'Blog Application',
-                        problem: 'Full-featured content publishing platform',
-                        desc: 'A full-stack blog platform with CRUD functionality, user authentication, and content management. Designed for scalability with a clean MVC backend structure using MongoDB for flexible content storage.',
-                        tech: ['Node.js', 'Express.js', 'MongoDB'],
-                        github: 'https://github.com/Haridas25052003',
-                    },
-                    {
-                        name: 'Interview Questions API',
-                        problem: 'Centralize tech interview knowledge',
-                        desc: 'A REST API providing categorized interview questions across different technologies and difficulty levels. Built for integration with interview prep platforms and frontend dashboards.',
-                        tech: ['Node.js', 'Express.js'],
-                        github: 'https://github.com/Haridas25052003',
-                    },
-                    {
-                        name: 'AI Mail Generator',
-                        problem: 'Automate professional email writing',
-                        desc: 'An AI-based productivity tool that generates professional, context-aware emails from user input. Reduces email writing time by 80% using intelligent prompt engineering and API integration.',
-                        tech: ['JavaScript', 'API Integration'],
-                        github: 'https://github.com/Haridas25052003',
-                    },
-                    {
-                        name: 'Typing Speed Application',
-                        problem: 'Make typing practice engaging',
-                        desc: 'A web-based typing speed tester calculating WPM, accuracy, and providing real-time visual feedback. Focused on responsive UI and smooth user interaction with clean vanilla JS architecture.',
-                        tech: ['HTML', 'CSS', 'JavaScript'],
-                        github: 'https://github.com/Haridas25052003',
-                    },
-                    {
-                        name: 'Digital Diary Application',
-                        problem: 'Private, browser-native journaling',
-                        desc: 'A personal diary web app for writing, editing, and securely storing daily notes entirely in the browser. Zero server-side dependency — focused on privacy, simplicity, and clean UI.',
-                        tech: ['JavaScript', 'Local Storage'],
-                        github: 'https://github.com/Haridas25052003',
-                    },
-                ],
+        <!-- Technology Stack #2: Backend -->
+        <div class="tech">
+          <h2>Backend</h2>
+          <i class="devicon-spring-plain-wordmark colored"></i>
+          <i class="devicon-apache-plain colored"></i>
+          <i class="devicon-mysql-plain-wordmark colored"></i>
+          <i class="devicon-oracle-plain colored"></i>
+          <p>My expertise in Spring Boot, Hibernate/JPA, REST APIs, and SQL databases.</p>
+        </div>
 
-                experience: [
-                    {
-                        role: 'Full Stack Developer Intern',
-                        company: 'Insta IQ, Nagpur',
-                        period: 'Jun 2024 – Oct 2024',
-                        points: [
-                            'Developed and optimized front-end modules using HTML, CSS, JavaScript, and React',
-                            'Integrated RESTful APIs ensuring seamless UI-backend communication',
-                            'Improved application performance and UX through structured UI enhancements',
-                            'Performed extensive debugging and cross-platform testing'
-                        ]
-                    }
-                ],
+        <!-- Technology Stack #3: Front-End -->
+        <div class="tech">
+          <h2>Front-End</h2>
+          <i class="devicon-html5-plain-wordmark colored"></i>
+          <i class="devicon-css3-plain-wordmark colored"></i>
+          <i class="devicon-javascript-plain colored"></i>
+          <i class="devicon-react-original colored"></i>
+          <p>My skills for building responsive and interactive user interfaces.</p>
+        </div>
 
-                certifications: [
-                    { title: 'Software Engineering Virtual Program', issuer: 'Goldman Sachs' },
-                    { title: 'Java Programming', issuer: 'NPTEL' },
-                    { title: 'Core Java Course', issuer: 'Naresh IT' },
-                    { title: 'Java & SQL Training', issuer: 'ExcelR' },
-                    { title: 'UI Development', issuer: 'Udemy' },
-                ]
-            };
+        <!-- Technology Stack #4: Tools -->
+        <div class="tech">
+          <h2>Tools</h2>
+          <i class="devicon-git-plain-wordmark colored"></i>
+          <i class="devicon-github-plain-wordmark colored"></i>
+          <i class="devicon-visualstudio-plain colored"></i>
+          <i class="devicon-eclipse-plain colored"></i>
+          <p>My favorite tools for version control, code editing, and API testing.</p>
+        </div>
+      </div>
+    </section>
 
-            /* ==========================================
-               THEME TOGGLE
-            ========================================== */
-            const htmlEl = document.documentElement;
-            const themeBtn = document.getElementById('theme-toggle');
-            const themeIcon = document.getElementById('theme-icon');
+    <!-- ===== DIVIDER 3: Before Projects ===== -->
+<div class="section-divider">
+  <span class="divider-line"></span>
+  <span class="divider-icon"><i class="fa fa-code" aria-hidden="true"></i></span>
+  <span class="divider-line"></span>
+</div>
 
-            function setTheme(isDark) {
-                htmlEl.setAttribute('data-theme', isDark ? 'dark' : 'light');
-                themeIcon.textContent = isDark ? '🌙' : '☀️';
-                try { localStorage.setItem('hs-theme', isDark ? 'dark' : 'light'); } catch (e) { }
-            }
+<!-- Projects Section -->
+<section id="projects">
+  <div class="user-details">
+    <h1>Featured Projects</h1>
+  </div>
 
-            const savedTheme = (() => { try { return localStorage.getItem('hs-theme'); } catch (e) { return null; } })();
-            setTheme(savedTheme !== 'light');
+  <!-- User Project #1: AI Interviewer -->
+  <div class="user-projects">
+    <div class="images-right">
+      <picture>
+        <source type="image/webp" srcset="./assets/img/webp/ai-interviewer.webp" alt="AI Interviewer" />
+        <img alt="AI Interviewer" src="./assets/img/jpg/ai-interviewer.jpg" />
+      </picture>
+    </div>
+    <div class="contents" style="text-align: center">
+      <h3>AI Interviewer</h3>
+      <div>
+        <i class="devicon-spring-plain-wordmark colored" style="font-size: 32px;"></i>
+        <i class="devicon-react-original colored" style="font-size: 32px;"></i>
+        <i class="devicon-javascript-plain colored" style="font-size: 32px;"></i>
+        <i class="devicon-mysql-plain-wordmark colored" style="font-size: 32px;"></i>
+      </div>
+      <p style="text-align: justify">
+        Built an AI-based interview platform with real-time Q&A, speech-to-text input, and automated answer evaluation. 
+        Implemented JWT authentication and adaptive question generation using OpenAI GPT-4o. Generated AI-based 
+        performance reports with scoring and PDF download capabilities.
+      </p>
+      <a class="project-link" target="_blank" href="https://github.com/Haridas25052003/ai-interviewer">
+        Check it out!
+      </a>
+    </div>
+  </div>
 
-            themeBtn.addEventListener('click', () => {
-                const isDark = htmlEl.getAttribute('data-theme') === 'dark';
-                setTheme(!isDark);
-            });
+  <!-- User Project #2: AI Job Application Mail Generator -->
+  <div class="user-projects">
+    <div class="images-left">
+      <picture>
+        <source type="image/webp" srcset="./assets/img/webp/ai-mail-generator.webp" alt="AI Mail Generator" />
+        <img alt="AI Mail Generator" src="./assets/img/jpg/ai-mail-generator.jpg" />
+      </picture>
+    </div>
+    <div class="contents-right" style="text-align: center">
+      <h3>AI Job Application Mail Generator</h3>
+      <div>
+        <i class="devicon-spring-plain-wordmark colored" style="font-size: 32px;"></i>
+        <i class="devicon-java-plain-wordmark colored" style="font-size: 32px;"></i>
+        <i class="devicon-javascript-plain colored" style="font-size: 32px;"></i>
+        <i class="devicon-mysql-plain-wordmark colored" style="font-size: 32px;"></i>
+      </div>
+      <p style="text-align: justify">
+        Built a Spring Boot web application that generates job application emails using AI, based on inputs like 
+        company name, job role, and description. Used Hibernate and JPA to store user details and save previously 
+        generated email history in a SQL database with REST API endpoints.
+      </p>
+      <a class="project-link" target="_blank" href="https://github.com/Haridas25052003/ai-mail-generator">
+        Check it out!
+      </a>
+    </div>
+  </div>
 
-            /* ==========================================
-               HAMBURGER MENU
-            ========================================== */
-            const hamburger = document.getElementById('hamburger');
-            const mobileMenu = document.getElementById('mobile-menu');
+  <!-- User Project #3: Online Banking System -->
+  <div class="user-projects">
+    <div class="images-right">
+      <picture>
+        <source type="image/webp" srcset="./assets/img/webp/banking-system.webp" alt="Online Banking System" />
+        <img alt="Online Banking System" src="./assets/img/jpg/banking-system.jpg" />
+      </picture>
+    </div>
+    <div class="contents" style="text-align: center">
+      <h3>Online Banking System</h3>
+      <div>
+        <i class="devicon-spring-plain-wordmark colored" style="font-size: 32px;"></i>
+        <i class="devicon-java-plain-wordmark colored" style="font-size: 32px;"></i>
+        <i class="devicon-html5-plain-wordmark colored" style="font-size: 32px;"></i>
+        <i class="devicon-css3-plain-wordmark colored" style="font-size: 32px;"></i>
+        <i class="devicon-mysql-plain-wordmark colored" style="font-size: 32px;"></i>
+      </div>
+      <p style="text-align: justify">
+        Developed a basic banking application with deposit, withdrawal, balance check, and transaction history features. 
+        Used Hibernate and JPA to manage customer account data and transaction records in a SQL database with robust 
+        validations to keep banking operations accurate and consistent.
+      </p>
+      <a class="project-link" target="_blank" href="https://github.com/Haridas25052003/online-banking-system">
+        Check it out!
+      </a>
+    </div>
+  </div>
 
-            function toggleMenu(open) {
-                hamburger.classList.toggle('open', open);
-                mobileMenu.classList.toggle('open', open);
-                hamburger.setAttribute('aria-expanded', open.toString());
-                document.body.style.overflow = open ? 'hidden' : '';
-            }
+  <!-- User Project #4: Blog Platform with Admin Control -->
+  <div class="user-projects">
+    <div class="images-left">
+      <picture>
+        <source type="image/webp" srcset="./assets/img/webp/blog-platform.webp" alt="Blog Platform" />
+        <img alt="Blog Platform" src="./assets/img/jpg/blog-platform.jpg" />
+      </picture>
+    </div>
+    <div class="contents-right" style="text-align: center">
+      <h3>Blog Platform with Admin Control</h3>
+      <div>
+        <i class="devicon-spring-plain-wordmark colored" style="font-size: 32px;"></i>
+        <i class="devicon-java-plain-wordmark colored" style="font-size: 32px;"></i>
+        <i class="devicon-html5-plain-wordmark colored" style="font-size: 32px;"></i>
+        <i class="devicon-javascript-plain colored" style="font-size: 32px;"></i>
+        <i class="devicon-mysql-plain-wordmark colored" style="font-size: 32px;"></i>
+      </div>
+      <p style="text-align: justify">
+        Built a full-stack blog application where an Admin can create, edit, and delete blog posts and manage users. 
+        Implemented role-based access so Admins and regular Users see different features based on their role, with 
+        Hibernate and JPA for CRUD operations on blog posts and user management.
+      </p>
+      <a class="project-link" target="_blank" href="https://github.com/Haridas25052003/blog-platform">
+        Check it out!
+      </a>
+    </div>
+  </div>
 
-            hamburger.addEventListener('click', () => {
-                const isOpen = mobileMenu.classList.contains('open');
-                toggleMenu(!isOpen);
-            });
+  <!-- User Project #5: Interview Questions API -->
+  <div class="user-projects">
+    <div class="images-right">
+      <picture>
+        <source type="image/webp" srcset="./assets/img/webp/interview-api.webp" alt="Interview Questions API" />
+        <img alt="Interview Questions API" src="./assets/img/jpg/interview-api.jpg" />
+      </picture>
+    </div>
+    <div class="contents" style="text-align: center">
+      <h3>Interview Questions API</h3>
+      <div>
+        <i class="devicon-spring-plain-wordmark colored" style="font-size: 32px;"></i>
+        <i class="devicon-java-plain-wordmark colored" style="font-size: 32px;"></i>
+        <i class="devicon-mysql-plain-wordmark colored" style="font-size: 32px;"></i>
+      </div>
+      <p style="text-align: justify">
+        Developed REST APIs using Spring Boot to store and retrieve a collection of interview questions. Followed a 
+        clean layered structure (Controller → Service → Repository) using Spring Data JPA, connected to a SQL database 
+        to persist and query interview question data via API endpoints.
+      </p>
+      <a class="project-link" target="_blank" href="https://github.com/Haridas25052003/interview-api">
+        Check it out!
+      </a>
+    </div>
+  </div>
 
-            document.querySelectorAll('.mobile-nav-link').forEach(link => {
-                link.addEventListener('click', () => toggleMenu(false));
-            });
+  <!-- User Project #6: Digital Diary Application -->
+  <div class="user-projects">
+    <div class="images-left">
+      <picture>
+        <source type="image/webp" srcset="./assets/img/webp/digital-diary.webp" alt="Digital Diary Application" />
+        <img alt="Digital Diary Application" src="./assets/img/jpg/digital-diary.jpg" />
+      </picture>
+    </div>
+    <div class="contents-right" style="text-align: center">
+      <h3>Digital Diary Application</h3>
+      <div>
+        <i class="devicon-spring-plain-wordmark colored" style="font-size: 32px;"></i>
+        <i class="devicon-java-plain-wordmark colored" style="font-size: 32px;"></i>
+        <i class="devicon-mysql-plain-wordmark colored" style="font-size: 32px;"></i>
+      </div>
+      <p style="text-align: justify">
+        Built a diary app where users can create and manage their own diary entries through REST APIs. Used Hibernate 
+        and JPA for storing user and diary record data in MySQL, following a layered architecture (Controller, Service, 
+        DAO) to keep the code organized and maintainable.
+      </p>
+      <a class="project-link" target="_blank" href="https://github.com/Haridas25052003/digital-diary">
+        Check it out!
+      </a>
+    </div>
+  </div>
+</section>
 
-            /* ==========================================
-               TYPING ANIMATION
-            ========================================== */
-            (() => {
-                const el = document.getElementById('typed-tagline');
-                const cursor = document.getElementById('cursor');
-                const phrases = DATA.typingPhrases;
-                let phraseIdx = 0, charIdx = 0, isDeleting = false;
+    <!-- ===== DIVIDER 4: Before Education ===== -->
+    <div class="section-divider">
+      <span class="divider-line"></span>
+      <span class="divider-icon"><i class="fa fa-graduation-cap" aria-hidden="true"></i></span>
+      <span class="divider-line"></span>
+    </div>
 
-                function tick() {
-                    const phrase = phrases[phraseIdx];
-                    if (isDeleting) {
-                        el.textContent = phrase.substring(0, charIdx - 1);
-                        charIdx--;
-                    } else {
-                        el.textContent = phrase.substring(0, charIdx + 1);
-                        charIdx++;
-                    }
+    <!-- Education Section -->
+<section id="education">
+  <div class="user-details">
+    <h1>Education</h1>
+  </div>
+  
+  <div class="user-projects">
+    <div class="contents" style="text-align: center; width: 100%; margin: 0 auto;">
+      <h3>Bachelor of Engineering in Computer Science</h3>
+      
+      <!-- ==== ICON ADDED BEFORE COLLEGE NAME ==== -->
+      <div style="display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 8px;">
+        <!-- Option 1: Graduation Cap Icon -->
+        <i class="fa fa-graduation-cap" style="font-size: 35px; color: #1488CC;"></i>
+        <!-- OR Option 2: University Building Icon (choose one, comment out the other) -->
+        <!-- <i class="fa fa-university" style="font-size: 35px; color: #1488CC;"></i> -->
+        
+        <span style="font-size: 1.2rem; font-weight: bold; color: #333;">
+          Sant Gadge Baba University, Amaravati
+        </span>
+      </div>
+      
+      <p style="text-align: center; font-size: 1.1rem; margin-top: 10px;">
+        <strong>2021 – 2025</strong> &nbsp;|&nbsp; <strong>CGPA: 8.6</strong>
+      </p>
+      <p style="text-align: justify; max-width: 700px; margin: 15px auto;">
+        Completed Bachelor of Engineering in Computer Science with a strong academic record. 
+        Gained comprehensive knowledge in software development, data structures, algorithms, 
+        database management, and web technologies. Actively participated in coding competitions 
+        and hackathons to enhance practical skills.
+      </p>
+    </div>
+  </div>
+</section>
 
-                    let delay = isDeleting ? 40 : 70;
-                    if (!isDeleting && charIdx === phrase.length) {
-                        delay = 2000;
-                        isDeleting = true;
-                    } else if (isDeleting && charIdx === 0) {
-                        isDeleting = false;
-                        phraseIdx = (phraseIdx + 1) % phrases.length;
-                        delay = 400;
-                    }
-                    setTimeout(tick, delay);
-                }
-                setTimeout(tick, 800);
-            })();
+    <!-- ===== DIVIDER 5: Before Certifications ===== -->
+    <div class="section-divider">
+      <span class="divider-line"></span>
+      <span class="divider-icon"><i class="fa fa-certificate" aria-hidden="true"></i></span>
+      <span class="divider-line"></span>
+    </div>
 
-            /* ==========================================
-               NAVBAR SCROLL
-            ========================================== */
-            const navbar = document.getElementById('navbar');
-            const backToTop = document.getElementById('back-to-top');
-            let lastScroll = 0;
+    <!-- Certifications Section -->
+    <section id="certifications">
+      <div class="user-details">
+        <h1>Certifications</h1>
+      </div>
+      
+      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 960px; margin: 0 auto;">
+        <div style="background: #f8f9fa; padding: 15px 25px; border-radius: 10px; border-left: 4px solid #1488CC; flex: 1 1 200px; min-width: 180px; transition: transform 0.3s ease;"
+             onmouseover="this.style.transform='translateX(5px)';"
+             onmouseout="this.style.transform='translateX(0)';">
+          <i class="fa fa-certificate" style="color: #1488CC; font-size: 20px; margin-right: 10px;"></i>
+          <span style="font-weight: bold;">Software Engineering Virtual Program</span><br>
+          <span style="font-size: 0.9rem; color: #555;">Goldman Sachs</span>
+        </div>
+        <div style="background: #f8f9fa; padding: 15px 25px; border-radius: 10px; border-left: 4px solid #1488CC; flex: 1 1 200px; min-width: 180px; transition: transform 0.3s ease;"
+             onmouseover="this.style.transform='translateX(5px)';"
+             onmouseout="this.style.transform='translateX(0)';">
+          <i class="fa fa-certificate" style="color: #1488CC; font-size: 20px; margin-right: 10px;"></i>
+          <span style="font-weight: bold;">Full Stack Java Development</span><br>
+          <span style="font-size: 0.9rem; color: #555;">Symbiosis University</span>
+        </div>
+        <div style="background: #f8f9fa; padding: 15px 25px; border-radius: 10px; border-left: 4px solid #1488CC; flex: 1 1 200px; min-width: 180px; transition: transform 0.3s ease;"
+             onmouseover="this.style.transform='translateX(5px)';"
+             onmouseout="this.style.transform='translateX(0)';">
+          <i class="fa fa-certificate" style="color: #1488CC; font-size: 20px; margin-right: 10px;"></i>
+          <span style="font-weight: bold;">Java Programming</span><br>
+          <span style="font-size: 0.9rem; color: #555;">NPTEL</span>
+        </div>
+        <div style="background: #f8f9fa; padding: 15px 25px; border-radius: 10px; border-left: 4px solid #1488CC; flex: 1 1 200px; min-width: 180px; transition: transform 0.3s ease;"
+             onmouseover="this.style.transform='translateX(5px)';"
+             onmouseout="this.style.transform='translateX(0)';">
+          <i class="fa fa-certificate" style="color: #1488CC; font-size: 20px; margin-right: 10px;"></i>
+          <span style="font-weight: bold;">Java & SQL Training</span><br>
+          <span style="font-size: 0.9rem; color: #555;">ExcelR</span>
+        </div>
+        <div style="background: #f8f9fa; padding: 15px 25px; border-radius: 10px; border-left: 4px solid #1488CC; flex: 1 1 200px; min-width: 180px; transition: transform 0.3s ease;"
+             onmouseover="this.style.transform='translateX(5px)';"
+             onmouseout="this.style.transform='translateX(0)';">
+          <i class="fa fa-certificate" style="color: #1488CC; font-size: 20px; margin-right: 10px;"></i>
+          <span style="font-weight: bold;">Core Java</span><br>
+          <span style="font-size: 0.9rem; color: #555;">Naresh IT</span>
+        </div>
+        <div style="background: #f8f9fa; padding: 15px 25px; border-radius: 10px; border-left: 4px solid #1488CC; flex: 1 1 200px; min-width: 180px; transition: transform 0.3s ease;"
+             onmouseover="this.style.transform='translateX(5px)';"
+             onmouseout="this.style.transform='translateX(0)';">
+          <i class="fa fa-certificate" style="color: #1488CC; font-size: 20px; margin-right: 10px;"></i>
+          <span style="font-weight: bold;">UI Development</span><br>
+          <span style="font-size: 0.9rem; color: #555;">Udemy</span>
+        </div>
+      </div>
+    </section>
 
-            window.addEventListener('scroll', () => {
-                const y = window.scrollY;
-                navbar.classList.toggle('scrolled', y > 20);
-                backToTop.classList.toggle('visible', y > 400);
-                lastScroll = y;
-            }, { passive: true });
+    <!-- ===== DIVIDER 6: Before Contact ===== -->
+    <div class="section-divider">
+      <span class="divider-line"></span>
+      <span class="divider-icon"><i class="fa fa-envelope" aria-hidden="true"></i></span>
+      <span class="divider-line"></span>
+    </div>
 
-            /* ==========================================
-               ACTIVE NAV LINKS
-            ========================================== */
-            const sections = document.querySelectorAll('section[id]');
-            const navLinks = document.querySelectorAll('.nav-link');
+    <!-- Contact Section -->
+    <section id="contact">
+      <div class="user-details">
+        <h1>Get In Touch</h1>
+        <p style="max-width: 600px; margin: 0 auto 30px auto; font-size: 1.1rem;">
+          Have a question or want to work together? Feel free to reach out!
+        </p>
+      </div>
 
-            const sectionObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        navLinks.forEach(link => {
-                            link.classList.toggle('active', link.getAttribute('href') === `#${entry.target.id}`);
-                        });
-                    }
-                });
-            }, { threshold: 0.4 });
+      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; max-width: 960px; margin: 0 auto; padding: 0 20px;">
+        <!-- Contact Info Cards -->
+        <div style="flex: 1 1 250px; min-width: 200px; background: #f8f9fa; padding: 25px; border-radius: 10px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.3s ease;"
+             onmouseover="this.style.transform='translateY(-5px)';"
+             onmouseout="this.style.transform='translateY(0)';">
+          <i class="fa fa-envelope" style="font-size: 40px; color: #1488CC; margin-bottom: 15px;"></i>
+          <h3 style="margin: 0 0 10px 0; font-size: 1.1rem;">Email</h3>
+          <a href="mailto:haridasshinde314@gmail.com" style="color: #1488CC; text-decoration: none; font-size: 0.95rem;">
+            haridasshinde314@gmail.com
+          </a>
+        </div>
 
-            sections.forEach(s => sectionObserver.observe(s));
+        <div style="flex: 1 1 250px; min-width: 200px; background: #f8f9fa; padding: 25px; border-radius: 10px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.3s ease;"
+             onmouseover="this.style.transform='translateY(-5px)';"
+             onmouseout="this.style.transform='translateY(0)';">
+          <i class="fa fa-phone" style="font-size: 40px; color: #1488CC; margin-bottom: 15px;"></i>
+          <h3 style="margin: 0 0 10px 0; font-size: 1.1rem;">Phone</h3>
+          <a href="tel:+917875859810" style="color: #1488CC; text-decoration: none; font-size: 0.95rem;">
+            +91-7875859810
+          </a>
+        </div>
 
-            /* ==========================================
-               SCROLL REVEAL
-            ========================================== */
-            const revealObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        revealObserver.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.1 });
+        <div style="flex: 1 1 250px; min-width: 200px; background: #f8f9fa; padding: 25px; border-radius: 10px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.3s ease;"
+             onmouseover="this.style.transform='translateY(-5px)';"
+             onmouseout="this.style.transform='translateY(0)';">
+          <i class="fa fa-map-marker" style="font-size: 40px; color: #1488CC; margin-bottom: 15px;"></i>
+          <h3 style="margin: 0 0 10px 0; font-size: 1.1rem;">Location</h3>
+          <span style="color: #555; font-size: 0.95rem;">Maharashtra, India</span>
+        </div>
+      </div>
 
-            document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+      <!-- Social Links -->
+      <div style="text-align: center; margin-top: 40px;">
+        <h3 style="color: #333; margin-bottom: 20px;">Connect With Me</h3>
+        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+          <a href="https://linkedin.com/in/haridas-shinde-113971235" target="_blank" 
+             style="display: inline-block; padding: 12px 30px; background: #1488CC; color: #fff; border-radius: 30px; text-decoration: none; font-weight: bold; transition: all 0.3s;"
+             onmouseover="this.style.background='#5347a8'; this.style.transform='translateY(-3px)';"
+             onmouseout="this.style.background='#1488CC'; this.style.transform='translateY(0)';">
+            <i class="fa fa-linkedin" style="margin-right: 10px;"></i> LinkedIn
+          </a>
+          <a href="https://github.com/Haridas25052003" target="_blank"
+             style="display: inline-block; padding: 12px 30px; background: #1488CC; color: #fff; border-radius: 30px; text-decoration: none; font-weight: bold; transition: all 0.3s;"
+             onmouseover="this.style.background='#5347a8'; this.style.transform='translateY(-3px)';"
+             onmouseout="this.style.background='#1488CC'; this.style.transform='translateY(0)';">
+            <i class="fa fa-github" style="margin-right: 10px;"></i> GitHub
+          </a>
+          <a href="https://freelancebyhari.vercel.app/" target="_blank"
+             style="display: inline-block; padding: 12px 30px; background: #1488CC; color: #fff; border-radius: 30px; text-decoration: none; font-weight: bold; transition: all 0.3s;"
+             onmouseover="this.style.background='#5347a8'; this.style.transform='translateY(-3px)';"
+             onmouseout="this.style.background='#1488CC'; this.style.transform='translateY(0)';">
+            <i class="fa fa-globe" style="margin-right: 10px;"></i> Portfolio
+          </a>
+          <a href="mailto:haridasshinde314@gmail.com" target="_blank"
+             style="display: inline-block; padding: 12px 30px; background: #1488CC; color: #fff; border-radius: 30px; text-decoration: none; font-weight: bold; transition: all 0.3s;"
+             onmouseover="this.style.background='#5347a8'; this.style.transform='translateY(-3px)';"
+             onmouseout="this.style.background='#1488CC'; this.style.transform='translateY(0)';">
+            <i class="fa fa-envelope" style="margin-right: 10px;"></i> Email
+          </a>
+        </div>
+      </div>
+    </section>
 
-            /* ==========================================
-               RENDER SKILLS
-            ========================================== */
-            function renderSkills() {
-                const grid = document.getElementById('skills-grid');
-                grid.innerHTML = '';
+    <footer class="footer">
+      <p>&copy; Haridas M. Shinde </p>
+    </footer>
 
-                Object.entries(DATA.skills).forEach(([category, skills], i) => {
-                    const col = document.createElement('div');
-                    col.className = 'reveal card p-5';
-                    col.style.transitionDelay = `${i * 0.08}s`;
-
-                    col.innerHTML = `
-                    <div class="skill-category-title">${category}</div>
-                    <div class="flex flex-wrap gap-2">
-                        ${skills.map(s => `
-                            <div class="skill-badge">
-                                <img src="${s.icon}" alt="${s.name}" onerror="this.style.display='none'">
-                                ${s.name}
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-                    grid.appendChild(col);
-                    revealObserver.observe(col);
-                });
-            }
-
-            /* ==========================================
-               RENDER SERVICES
-            ========================================== */
-            function renderServices() {
-                const grid = document.getElementById('services-grid');
-                grid.innerHTML = '';
-
-                DATA.services.forEach((svc, i) => {
-                    const el = document.createElement('div');
-                    el.className = 'reveal card p-5';
-                    el.style.transitionDelay = `${i * 0.07}s`;
-
-                    el.innerHTML = `
-                    <div class="service-icon mb-4">${svc.icon}</div>
-                    <h3 class="font-display font-bold text-base mb-2" style="color: var(--text-primary);">${svc.title}</h3>
-                    <p class="text-sm" style="color: var(--text-secondary); line-height: 1.7;">${svc.desc}</p>
-                `;
-                    grid.appendChild(el);
-                    revealObserver.observe(el);
-                });
-            }
-
-            /* ==========================================
-               RENDER PROJECTS
-            ========================================== */
-            function renderProjects() {
-                const grid = document.getElementById('projects-grid');
-                grid.innerHTML = '';
-
-                DATA.projects.forEach((proj, i) => {
-                    const el = document.createElement('div');
-                    el.className = 'project-card reveal';
-                    el.style.transitionDelay = `${(i % 3) * 0.1}s`;
-
-                    el.innerHTML = `
-                    <div>
-                        <div class="project-rank">${String(i + 1).padStart(2, '0')} / ${String(DATA.projects.length).padStart(2, '0')}</div>
-                        <h3 class="project-name mt-1">${proj.name}</h3>
-                        <div class="project-problem mt-1">↳ ${proj.problem}</div>
-                    </div>
-                    <p class="project-desc">${proj.desc}</p>
-                    <div class="flex flex-wrap gap-1.5">
-                        ${proj.tech.map(t => `<span class="tech-tag">${t}</span>`).join('')}
-                    </div>
-                    <div class="flex items-center gap-4 pt-1 border-t" style="border-color: var(--border);">
-                        <a href="${proj.github}" target="_blank" rel="noopener" class="project-link">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-                            View on GitHub
-                        </a>
-                        ${proj.highlight ? `<span class="font-mono text-xs px-2 py-0.5 rounded ml-auto" style="background: var(--accent-dim); color: var(--accent);">⭐ Featured</span>` : ''}
-                    </div>
-                `;
-                    grid.appendChild(el);
-                    revealObserver.observe(el);
-                });
-            }
-
-            /* ==========================================
-               RENDER EXPERIENCE
-            ========================================== */
-            function renderExperience() {
-                const container = document.getElementById('experience-list');
-
-                DATA.experience.forEach((exp, i) => {
-                    const el = document.createElement('div');
-                    el.className = 'reveal flex gap-4';
-                    el.style.transitionDelay = `${i * 0.1}s`;
-
-                    el.innerHTML = `
-                    <div class="timeline-dot mt-1.5"></div>
-                    <div class="flex-1 pb-6">
-                        <div class="font-display font-bold text-base" style="color: var(--text-primary);">${exp.role}</div>
-                        <div class="flex items-center gap-3 mt-1 mb-3">
-                            <span class="text-sm" style="color: var(--text-secondary);">${exp.company}</span>
-                            <span class="font-mono text-xs px-2 py-0.5 rounded" style="background: var(--accent-dim); color: var(--accent);">${exp.period}</span>
-                        </div>
-                        <ul class="space-y-1.5">
-                            ${exp.points.map(p => `
-                                <li class="flex items-start gap-2 text-sm" style="color: var(--text-secondary);">
-                                    <span style="color: var(--accent); flex-shrink: 0; margin-top: 2px;">›</span>
-                                    ${p}
-                                </li>
-                            `).join('')}
-                        </ul>
-                    </div>
-                `;
-                    container.appendChild(el);
-                    revealObserver.observe(el);
-                });
-            }
-
-            /* ==========================================
-               RENDER CERTIFICATIONS
-            ========================================== */
-            function renderCerts() {
-                const container = document.getElementById('certs-list');
-                container.innerHTML = '';
-
-                DATA.certifications.forEach((cert, i) => {
-                    const el = document.createElement('div');
-                    el.className = 'cert-card reveal';
-                    el.style.transitionDelay = `${i * 0.06}s`;
-
-                    el.innerHTML = `
-                    <span style="color: var(--accent); flex-shrink: 0; font-size: 0.875rem; margin-top: 1px;">✓</span>
-                    <div>
-                        <div style="color: var(--text-primary); font-size: 0.8125rem; font-weight: 500;">${cert.title}</div>
-                        <div style="color: var(--text-muted); font-size: 0.7rem; font-family: 'DM Mono', monospace; margin-top: 2px;">${cert.issuer}</div>
-                    </div>
-                `;
-                    container.appendChild(el);
-                    revealObserver.observe(el);
-                });
-            }
-
-            /* ==========================================
-               CONTACT FORM
-            ========================================== */
-            (() => {
-                const form = document.getElementById('contact-form');
-                const submitBtn = document.getElementById('submit-btn');
-                const submitLabel = document.getElementById('submit-label');
-
-                form.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const name = document.getElementById('name').value.trim();
-                    const email = document.getElementById('email').value.trim();
-                    const message = document.getElementById('message').value.trim();
-
-                    if (!name || !email || !message) {
-                        showToast('❌', 'Missing Fields', 'Please fill in all required fields.');
-                        return;
-                    }
-
-                    submitBtn.disabled = true;
-                    submitLabel.textContent = 'Sending…';
-
-                    try {
-                        await emailjs.sendForm(
-                            "service_f4y8txf",
-                            "template_vzce9sp",
-                            form
-                        );
-                        showToast('✅', 'Message Sent!', "I'll get back to you within 24 hours.");
-                        form.reset();
-                    } catch (err) {
-                        console.error(err);
-                        showToast('❌', 'Send Failed', 'Please try emailing me directly.');
-                    } finally {
-                        submitBtn.disabled = false;
-                        submitLabel.textContent = 'Send Message';
-                    }
-                });
-            })();
-
-            /* ==========================================
-               TOAST NOTIFICATION
-            ========================================== */
-            function showToast(icon, title, msg, duration = 4000) {
-                const toast = document.getElementById('toast');
-                document.getElementById('toast-icon').textContent = icon;
-                document.getElementById('toast-title').textContent = title;
-                document.getElementById('toast-msg').textContent = msg;
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), duration);
-            }
-
-            /* ==========================================
-               INIT
-            ========================================== */
-            renderSkills();
-            renderServices();
-            renderProjects();
-            renderExperience();
-            renderCerts();
-
-            // Re-observe any freshly rendered .reveal elements
-            setTimeout(() => {
-                document.querySelectorAll('.reveal:not([data-observed])').forEach(el => {
-                    el.setAttribute('data-observed', '1');
-                    revealObserver.observe(el);
-                });
-            }, 100);
-
-        })();
-    </script>
-
-</body>
-
+    <!-- Import JS: Particles Theme -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <!-- Import JS: Sweet Scroll -->
+    <script src="./assets/js/sweet-scroll.min.js"></script>
+    <!-- Import JS: Google Analytics -->
+    <script src="./assets/js/google-analytics.js"></script>
+    <!-- Import JS: Main Script -->
+    <script src="./assets/js/main.js"></script>
+  </body>
 </html>
